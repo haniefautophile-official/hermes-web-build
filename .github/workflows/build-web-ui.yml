@@ -1,0 +1,34 @@
+﻿name: Build Hermes Web UI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-web-ui:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Web UI
+        run: npm run build -w web
+
+      - name: Package Web UI
+        run: tar -czf hermes-web-dist.tar.gz -C hermes_cli web_dist
+
+      - name: Upload Web UI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hermes-web-dist
+          path: hermes-web-dist.tar.gz
+          retention-days: 7
